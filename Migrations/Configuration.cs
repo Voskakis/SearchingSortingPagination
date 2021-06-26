@@ -22,18 +22,20 @@
             foreach (var field in TrainerGenerator.Fields)
             {
                 Category category = new Category() { Kind = field };
-                if (!context.Categories.Any(c => c.Kind == category.Kind))
+                if (context.Categories.FirstOrDefault(c => c.Kind == category.Kind)==null)
                 {
                     context.Entry(category).State = EntityState.Added;
                 }
             }
             context.SaveChanges();
 
+            Category[] categories = context.Categories.ToArray();
             TrainerGenerator tg = new TrainerGenerator();
             List<Tuple<string, string>> names = TrainerGenerator.GetFullNames();
             foreach (var fullname in names)
             {
                 bool isEmployed = tg.GetChance(0.9);
+                
                 Trainer trainer = new Trainer()
                 {
                     FirstName = fullname.Item1,
@@ -42,14 +44,20 @@
                     Salary = isEmployed ? tg.GetMoney() : 0,
                     isAvailable = isEmployed ? tg.GetChance(0.5) : true
                 };
-                if (!context.Trainers.Any(t => t.FirstName + t.LastName == trainer.FirstName + trainer.LastName))
+                if (context.Trainers.FirstOrDefault(t => t.FirstName + t.LastName == trainer.FirstName + trainer.LastName)==null)
                 {
+                    for (int i = 0; i < tg.Rand.Next(1, 4); i++)
+                    {
+                        Category tbi = categories[tg.Rand.Next(categories.Length)];
+                        if (!trainer.Categories.Contains(tbi))
+                        {
+                            trainer.Categories.Add(tbi);
+                        }
+                    }
                     context.Entry(trainer).State = EntityState.Added;
                 }
             }
             context.SaveChanges();
-
-            
         }
     }
 }

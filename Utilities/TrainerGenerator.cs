@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 
 namespace SearchingSortingPagination.Utilities
 {
@@ -13,7 +11,7 @@ namespace SearchingSortingPagination.Utilities
         {
             Rand = new Random();
         }
-        private static string[] fields =
+        public static string[] Fields { get; private set; } = 
         {
             "Logic", "Mathematics", "Statistics", "Systems Theory", "Decision Theory", "Computer Science",
             "Physics", "Chemistry", "Earth Science", "Astronomy", "Biochemistry", "Microbiology", 

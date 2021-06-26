@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace SearchingSortingPagination.Models
 {
@@ -11,6 +8,6 @@ namespace SearchingSortingPagination.Models
         public string Kind { get; set; }
 
         //navigation properties
-        public ICollection<Trainer> Trainers { get; set; }
+        public virtual ICollection<Trainer> Trainers { get; set; }
     }
 }

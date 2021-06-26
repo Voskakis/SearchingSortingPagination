@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace SearchingSortingPagination.Models
 {
@@ -15,6 +13,6 @@ namespace SearchingSortingPagination.Models
         public bool isAvailable { get; set; }
 
         //navigation properties
-        public ICollection<Category> Categories { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
     }
 }

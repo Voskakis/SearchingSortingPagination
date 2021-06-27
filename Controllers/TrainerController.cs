@@ -16,7 +16,8 @@ namespace SearchingSortingPagination.Controllers
         private MyDatabase db = new MyDatabase();
 
         // GET: Trainer
-        public ActionResult Index(string searchFirstName, string searchLastName, int? searchMinSalary, int? searchMaxSalary, string sortOrder, int? pSize, int? page)
+        public ActionResult Index(string searchFirstName, string searchLastName, int? searchMinSalary, int? searchMaxSalary, 
+            string sortOrder, int? pSize, int? page)
         {
 
             var trainers = db.Trainers.ToList();
@@ -27,18 +28,24 @@ namespace SearchingSortingPagination.Controllers
 
             ViewBag.SSSP = sortOrder == "SalaryAsc" ? "SalaryDesc" : "SalaryAsc"; //SSSP LastNameSortP
 
+            ViewBag.Filter_FName = searchFirstName;
+            ViewBag.Filter_LName = searchLastName;
+            ViewBag.Filter_MinSalary = searchMinSalary;
+            ViewBag.Filter_MaxSalary = searchMaxSalary;
+
+
             #region Filtering
 
             if (!String.IsNullOrWhiteSpace(searchFirstName))
                 trainers = trainers.Where(x => x.FirstName.ToUpper().Contains(searchFirstName.ToUpper())).ToList();
 
             if (!String.IsNullOrWhiteSpace(searchLastName))
-                trainers = trainers.Where(x => x.FirstName.ToUpper().Contains(searchLastName.ToUpper())).ToList();
+                trainers = trainers.Where(x => x.LastName.ToUpper().Contains(searchLastName.ToUpper())).ToList();
 
-            if (!(searchMinSalary is null))
+            if (searchMinSalary!= null)
                     trainers = trainers.Where(x => x.Salary >= searchMinSalary).ToList();
 
-            if (!(searchMaxSalary is null))
+            if (searchMaxSalary != null)
                         trainers = trainers.Where(x => x.Salary <= searchMaxSalary).ToList();
             #endregion
 
@@ -69,7 +76,7 @@ namespace SearchingSortingPagination.Controllers
 
 
             #region pagination
-            int pageSize = pSize ?? 3;
+            int pageSize = pSize ?? 5;
             int pageNumber = page ?? 1;
             #endregion
 

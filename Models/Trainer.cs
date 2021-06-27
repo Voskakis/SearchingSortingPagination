@@ -18,9 +18,8 @@ namespace SearchingSortingPagination.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-
+        [Range(0, Double.PositiveInfinity)]
         public decimal Salary { get; set; }
-
 
         public DateTime? HireDate { get; set; }
 
@@ -28,6 +27,7 @@ namespace SearchingSortingPagination.Models
         public bool isAvailable { get; set; }
 
         //navigation properties
+        [Display(Name = "Categories")]
         public virtual ICollection<Category> Categories { get; set; }
     }
 }

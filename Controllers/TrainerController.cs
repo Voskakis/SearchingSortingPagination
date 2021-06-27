@@ -9,6 +9,7 @@ using SearchingSortingPagination.Models;
 using PagedList.Mvc;
 using PagedList;
 using SearchingSortingPagination.Utilities;
+using System.Collections.Generic;
 
 namespace SearchingSortingPagination.Controllers
 {
@@ -23,6 +24,7 @@ namespace SearchingSortingPagination.Controllers
 
             var trainers = db.Trainers.ToList();
 
+            #region DucheBags
             ViewBag.FNSP = String.IsNullOrEmpty(sortOrder) ? "FirstNameDesc" : ""; //FNSP FirstNameSortP
 
             ViewBag.LNSP = sortOrder == "LastNameAsc" ? "LastNameDesc" : "LastNameAsc"; //LNSP LastNameSortP
@@ -41,7 +43,7 @@ namespace SearchingSortingPagination.Controllers
             ViewBag.Filter_MinDate = searchMinDate;
             ViewBag.Filter_MaxDate = searchMaxDate;
             ViewBag.Filter_Available = searchIsAvailable;
-
+            #endregion
 
             #region Filtering
 
@@ -68,7 +70,6 @@ namespace SearchingSortingPagination.Controllers
 
 
             #endregion
-
 
             #region Sorting
             switch (sortOrder)
@@ -100,7 +101,6 @@ namespace SearchingSortingPagination.Controllers
             }
             #endregion
 
-
             #region pagination
             int pageSize = pSize ?? 5;
             int pageNumber = page ?? 1;
@@ -124,30 +124,72 @@ namespace SearchingSortingPagination.Controllers
             return View(trainer);
         }
 
+        public ActionResult CategoryDetails(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Category category = db.Categories.Find(id);
+            if (category == null)
+            {
+                return HttpNotFound();
+            }
+            return View(category);
+        }
+
         // GET: Trainer/Create
         public ActionResult Create()
         {
+            ViewBag.SelectedCategoriesIds = db.Categories.ToList().Select(x => new SelectListItem()
+            {
+                Value = x.CategoryId.ToString(),
+                Text = x.Kind
+            });
+            
+
             return View();
         }
 
-        // POST: Trainer/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TrainerId,FirstName,LastName,Salary")] Trainer trainer)
+        public ActionResult Create([Bind(Include = "TrainerId,FirstName,LastName,Salary,HireDate,isAvailable")] Trainer trainer, IEnumerable<int> SelectedCategoriesIds) 
         {
             if (ModelState.IsValid)
             {
-                db.Trainers.Add(trainer);
+                db.Trainers.Attach(trainer);
+                db.Entry(trainer).Collection("Categories").Load();
+                trainer.Categories.Clear();
                 db.SaveChanges();
+
+                if (SelectedCategoriesIds != null)
+                {
+                    foreach (var id in SelectedCategoriesIds)
+                    {
+                        Category category = db.Categories.Find(id);
+                        if (category != null)
+                        {
+                            trainer.Categories.Add(category);
+                        }
+                    }
+                }
+
+                db.Entry(trainer).State = EntityState.Added;
+                db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
+            ViewBag.SelectedCategoriesIds = db.Categories.ToList().Select(x => new SelectListItem()
+            {
+                Value = x.CategoryId.ToString(),
+                Text = x.Kind
+            });
 
             return View(trainer);
         }
 
-        // GET: Trainer/Edit/5
+        
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -159,22 +201,54 @@ namespace SearchingSortingPagination.Controllers
             {
                 return HttpNotFound();
             }
+
+            var categoryIds = trainer.Categories.Select(x => x.CategoryId);
+            ViewBag.SelectedCategoriesIds = db.Categories.ToList().Select(x => new SelectListItem()
+            {
+                Value = x.CategoryId.ToString(),
+                Text = x.Kind,
+                Selected = categoryIds.Any(y=>y==x.CategoryId)
+            });
+
             return View(trainer);
         }
 
-        // POST: Trainer/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TrainerId,FirstName,LastName,Salary")] Trainer trainer)
+        public ActionResult Edit([Bind(Include = "TrainerId,FirstName,LastName,Salary,HireDate,isAvailable")] Trainer trainer, IEnumerable<int> SelectedCategoriesIds)
         {
             if (ModelState.IsValid)
             {
+                db.Trainers.Attach(trainer);
+                db.Entry(trainer).Collection("Categories").Load();
+                trainer.Categories.Clear();
+                db.SaveChanges();
+
+                if (SelectedCategoriesIds != null)
+                {
+                    foreach (var id in SelectedCategoriesIds)
+                    {
+                        Category category = db.Categories.Find(id);
+                        if (category != null)
+                        {
+                            trainer.Categories.Add(category);
+                        }
+                    }
+                }
+
                 db.Entry(trainer).State = EntityState.Modified;
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
+
+            ViewBag.SelectedCategoriesIds = db.Categories.ToList().Select(x => new SelectListItem()
+            {
+                Value = x.CategoryId.ToString(),
+                Text = x.Kind
+            });
+
             return View(trainer);
         }
 
@@ -199,7 +273,11 @@ namespace SearchingSortingPagination.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Trainer trainer = db.Trainers.Find(id);
-            db.Trainers.Remove(trainer);
+            trainer.Categories.Clear();
+            db.Entry(trainer).State = EntityState.Modified;
+            db.SaveChanges();
+
+            db.Entry(trainer).State = EntityState.Deleted;
             db.SaveChanges();
             return RedirectToAction("Index");
         }

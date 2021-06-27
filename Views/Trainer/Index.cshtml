@@ -21,6 +21,7 @@
 
     using (Html.BeginForm("index", "Trainer", FormMethod.Get))
     {
+    <div id="overall">
         <div id="div0">
             @Html.TextBox("searchFirstName", null, new { @class = "form-control", placeholder = "Search First Name", type = "search" })
             @Html.TextBox("searchLastName", null, new { @class = "form-control", placeholder = "Search Last Name", type = "search" })
@@ -36,6 +37,7 @@
         <div id="div3">
             @Html.TextBox("searchIsAvailable", null, new { @class = "form-control", placeholder = "Search for availability", type = "search" })
         </div>
+    </div>
 
         <div id="divsub" >
             <input type="submit" value="Search Trainer" class="btn btn-primary" />
@@ -100,7 +102,7 @@
                         @foreach (var category in item.Categories)
                         {
                             <li>
-                                <a href="">@category.Kind</a>
+                                @Html.ActionLink(category.Kind, "CategoryDetails", new { id=category.CategoryId})
                             </li>
                         }
                     </ul>
@@ -156,6 +158,11 @@ else
 
         #divsub {
             padding: 5px 0px 20px 10px;
+        }
+
+        #overall {
+            border-width: 3px;
+            border-style: outset;
         }
     </style>
 }

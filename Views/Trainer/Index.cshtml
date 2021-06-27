@@ -21,25 +21,25 @@
 
     using (Html.BeginForm("index", "Trainer", FormMethod.Get))
     {
-    <div id="overall">
-        <div id="div0">
-            @Html.TextBox("searchFirstName", null, new { @class = "form-control", placeholder = "Search First Name", type = "search" })
-            @Html.TextBox("searchLastName", null, new { @class = "form-control", placeholder = "Search Last Name", type = "search" })
+        <div id="overall">
+            <div id="div0">
+                @Html.TextBox("searchFirstName", null, new { @class = "form-control", placeholder = "Search First Name", type = "search" })
+                @Html.TextBox("searchLastName", null, new { @class = "form-control", placeholder = "Search Last Name", type = "search" })
+            </div>
+            <div id="div1">
+                @Html.TextBox("searchMinDate", null, new { @class = "form-control datepicker", placeholder = "Search Minimum Date Hired", type = "search" })
+                @Html.TextBox("searchMaxDate", null, new { @class = "form-control datepicker", placeholder = "Search Maximum Date Hired", type = "search" })
+            </div>
+            <div id="div2">
+                @Html.TextBox("searchMinSalary", null, new { @class = "form-control", placeholder = "Search Minimum Salary", type = "search" })
+                @Html.TextBox("searchMaxSalary", null, new { @class = "form-control", placeholder = "Search Maximum Salary", type = "search" })
+            </div>
+            <div id="div3">
+                @Html.TextBox("searchIsAvailable", null, new { @class = "form-control", placeholder = "Search for availability", type = "search" })
+            </div>
         </div>
-        <div id="div1">
-            @Html.TextBox("searchMinDate", null, new { @class = "form-control", placeholder = "Search Minimum Date Hired", type = "search" })
-            @Html.TextBox("searchMaxDate", null, new { @class = "form-control", placeholder = "Search Maximum Date Hired", type = "search" })
-        </div>
-        <div id="div2">
-            @Html.TextBox("searchMinSalary", null, new { @class = "form-control", placeholder = "Search Minimum Salary", type = "search" })
-            @Html.TextBox("searchMaxSalary", null, new { @class = "form-control", placeholder = "Search Maximum Salary", type = "search" })
-        </div>
-        <div id="div3">
-            @Html.TextBox("searchIsAvailable", null, new { @class = "form-control", placeholder = "Search for availability", type = "search" })
-        </div>
-    </div>
 
-        <div id="divsub" >
+        <div id="divsub">
             <input type="submit" value="Search Trainer" class="btn btn-primary" />
             <input id="ResetButton" type="button" value="Clear Form" class="btn btn-success" />
         </div>
@@ -102,7 +102,7 @@
                         @foreach (var category in item.Categories)
                         {
                             <li>
-                                @Html.ActionLink(category.Kind, "CategoryDetails", new { id=category.CategoryId})
+                                @Html.ActionLink(category.Kind, "CategoryDetails", new { id = category.CategoryId })
                             </li>
                         }
                     </ul>
@@ -168,13 +168,33 @@ else
 }
 
 @section MyCustomJavascript {
+
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.theme.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+        
+
     <script>
+        $(document).ready(function () {
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy",
+                changemonth: true,
+                changeyear: true
+            });
+        });
+
         $("#ResetButton").click(function (e) {
             e.preventDefault();
             $("#searchFirstName").val("");
             $("#searchLastName").val("");
             $("#searchMinSalary").val("");
             $("#searchMaxSalary").val("");
+            $("#searchMaxDate").val("");
+            $("#searchMinDate").val("");
+            $("#searchIsAvailable").val("");
+
         });
     </script>
 }

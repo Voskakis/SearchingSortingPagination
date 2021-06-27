@@ -32,7 +32,7 @@
             int troll_meter = 0;
             foreach (var fullname in names)
             {
-                if (troll_meter++ > 80) break;
+                if (troll_meter++ > 200) break;
                 bool isEmployed = tg.GetChance(0.9);
                 
                 Trainer trainer = new Trainer()

@@ -142,7 +142,9 @@
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Trainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\Converter.cs" />
     <Compile Include="Utilities\TrainerGenerator.cs" />
+    <Compile Include="Utilities\Validator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />

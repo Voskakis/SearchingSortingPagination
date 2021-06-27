@@ -8,6 +8,7 @@ using SearchingSortingPagination.Dal;
 using SearchingSortingPagination.Models;
 using PagedList.Mvc;
 using PagedList;
+using SearchingSortingPagination.Utilities;
 
 namespace SearchingSortingPagination.Controllers
 {
@@ -17,7 +18,7 @@ namespace SearchingSortingPagination.Controllers
 
         // GET: Trainer
         public ActionResult Index(string searchFirstName, string searchLastName, int? searchMinSalary, int? searchMaxSalary, 
-            string sortOrder, int? pSize, int? page)
+            DateTime? searchMinDate, DateTime? searchMaxDate, bool? searchIsAvailable, string sortOrder, int? pSize, int? page)
         {
 
             var trainers = db.Trainers.ToList();
@@ -25,13 +26,21 @@ namespace SearchingSortingPagination.Controllers
             ViewBag.FNSP = String.IsNullOrEmpty(sortOrder) ? "FirstNameDesc" : ""; //FNSP FirstNameSortP
 
             ViewBag.LNSP = sortOrder == "LastNameAsc" ? "LastNameDesc" : "LastNameAsc"; //LNSP LastNameSortP
+            
+            ViewBag.SSSP = sortOrder == "SalaryAsc" ? "SalaryDesc" : "SalaryAsc"; //SSSP SalarySSortP
 
-            ViewBag.SSSP = sortOrder == "SalaryAsc" ? "SalaryDesc" : "SalaryAsc"; //SSSP LastNameSortP
+            ViewBag.HDSP = sortOrder == "HireDateAsc" ? "HireDateDesc" : "HireDateAsc";
+
+            ViewBag.Current_Sorting = sortOrder;
+
 
             ViewBag.Filter_FName = searchFirstName;
             ViewBag.Filter_LName = searchLastName;
             ViewBag.Filter_MinSalary = searchMinSalary;
             ViewBag.Filter_MaxSalary = searchMaxSalary;
+            ViewBag.Filter_MinDate = searchMinDate;
+            ViewBag.Filter_MaxDate = searchMaxDate;
+            ViewBag.Filter_Available = searchIsAvailable;
 
 
             #region Filtering
@@ -47,6 +56,17 @@ namespace SearchingSortingPagination.Controllers
 
             if (searchMaxSalary != null)
                         trainers = trainers.Where(x => x.Salary <= searchMaxSalary).ToList();
+
+            if (searchMinDate != null)
+                trainers = trainers.Where(x => Validator.Compare(x.HireDate, searchMinDate) >= 0).ToList();
+
+            if (searchMaxDate != null)
+                trainers = trainers.Where(x => Validator.Compare(x.HireDate, searchMaxDate) <= 0).ToList();
+
+            if (searchIsAvailable != null)
+                trainers = trainers.Where(x => x.isAvailable == (bool)searchIsAvailable).ToList();
+
+
             #endregion
 
 
@@ -67,6 +87,12 @@ namespace SearchingSortingPagination.Controllers
                     break;
                 case "SalaryDesc": 
                     trainers = trainers.OrderByDescending(x => x.Salary).ToList(); 
+                    break;
+                case "HireDateAsc":
+                    trainers = trainers.OrderBy(x => x.HireDate).ToList();
+                    break;
+                case "HireDateDesc":
+                    trainers = trainers.OrderByDescending(x => x.HireDate).ToList();
                     break;
                 default: 
                     trainers = trainers.OrderBy(x => x.FirstName).ToList(); 

@@ -1,6 +1,7 @@
 ﻿@model PagedList.IPagedList<SearchingSortingPagination.Models.Trainer>
 @using PagedList;
 @using PagedList.Mvc;
+@using SearchingSortingPagination.Utilities;
 
 @{
     ViewBag.Title = "Index";
@@ -12,7 +13,7 @@
 
 @if (!(Model.PageCount < Model.PageNumber))
 {
-    
+
     <p>
         @Html.ActionLink("Create New", "Create")
     </p>
@@ -20,13 +21,26 @@
 
     using (Html.BeginForm("index", "Trainer", FormMethod.Get))
     {
-        @Html.TextBox("searchFirstName", null, new { @class = "form-control", placeholder = "Search First Name", type = "search" })
-        @Html.TextBox("searchLastName", null, new { @class = "form-control", placeholder = "Search Last Name", type = "search" })
-        @Html.TextBox("searchMinSalary", null, new { @class = "form-control", placeholder = "Search Minimum Salary", type = "search" })
-        @Html.TextBox("searchMaxSalary", null, new { @class = "form-control", placeholder = "Search Maximum Salary", type = "search" })
+        <div id="div0">
+            @Html.TextBox("searchFirstName", null, new { @class = "form-control", placeholder = "Search First Name", type = "search" })
+            @Html.TextBox("searchLastName", null, new { @class = "form-control", placeholder = "Search Last Name", type = "search" })
+        </div>
+        <div id="div1">
+            @Html.TextBox("searchMinDate", null, new { @class = "form-control", placeholder = "Search Minimum Date Hired", type = "search" })
+            @Html.TextBox("searchMaxDate", null, new { @class = "form-control", placeholder = "Search Maximum Date Hired", type = "search" })
+        </div>
+        <div id="div2">
+            @Html.TextBox("searchMinSalary", null, new { @class = "form-control", placeholder = "Search Minimum Salary", type = "search" })
+            @Html.TextBox("searchMaxSalary", null, new { @class = "form-control", placeholder = "Search Maximum Salary", type = "search" })
+        </div>
+        <div id="div3">
+            @Html.TextBox("searchIsAvailable", null, new { @class = "form-control", placeholder = "Search for availability", type = "search" })
+        </div>
 
-        <input type="submit" value="Search Trainer" class="btn btn-primary" />
-        <input id="ResetButton" type="button" value="Clear Form" class="btn btn-success" />
+        <div id="divsub" >
+            <input type="submit" value="Search Trainer" class="btn btn-primary" />
+            <input id="ResetButton" type="button" value="Clear Form" class="btn btn-success" />
+        </div>
     }
 
 
@@ -34,13 +48,21 @@
         <tr>
             <th>
                 @Html.ActionLink("First Name", "Index", "Trainer", new { sortOrder = "FirstNameDesc" }, null)
-                
             </th>
             <th>
                 @Html.ActionLink("Last Name", "Index", "Trainer", new { sortOrder = ViewBag.LNSP }, null)
             </th>
             <th>
                 @Html.ActionLink("Salary", "Index", "Trainer", new { sortOrder = ViewBag.SSSP }, null)
+            </th>
+            <th>
+                @Html.ActionLink("Hire Date", "Index", "Trainer", new { sortOrder = ViewBag.HDSP }, null)
+            </th>
+            <th class="text-primary">
+                @Html.DisplayNameFor(model => model.First().isAvailable)
+            </th>
+            <th class="text-primary">
+                Categories
             </th>
             <th></th>
         </tr>
@@ -56,6 +78,32 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Salary)
+                </td>
+                <td>
+                    @if (item.HireDate != null)
+                    {
+                        <text>@Converter.RemoveNull(item.HireDate).ToString("d")</text>
+                    }
+                    else
+                    {
+                        <div class="col-lg-1">N/A</div>
+                    }
+                </td>
+                <td>
+                    @if (item.isAvailable)
+                    {
+                        <div class="col-lg-1 glyphicon glyphicon-ok"></div>
+                    }
+                </td>
+                <td>
+                    <ul>
+                        @foreach (var category in item.Categories)
+                        {
+                            <li>
+                                <a href="">@category.Kind</a>
+                            </li>
+                        }
+                    </ul>
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.TrainerId }) |
@@ -75,25 +123,13 @@
        searchFirstName = ViewBag.Filter_FName,
        searchLastName = ViewBag.Filter_LName,
        searchMinSalary = ViewBag.Filter_MinSalary,
-       searchMaxSalary = ViewBag.Filter_MaxSalary
-        }))
+       searchMaxSalary = ViewBag.Filter_MaxSalary,
+       searchMinDate = ViewBag.Filter_MinDate,
+       searchMaxDate = ViewBag.Filter_MaxDate,
+       searchIsAvailable = ViewBag.Filter_Available,
+       sortOrder = ViewBag.Current_Sorting
+   }))
     </div>
-
-
-    @*
-            string searchFirstName, string searchLastName, int? searchMinSalary, int? searchMaxSalary,
-                string sortOrder
-
-
-            <div class="pager">
-            @Html.PagedListPager(Model, x => Url.Action("Index", new {
-                                                                       x,
-                                                                       sortOrder = ViewBag.currentSort,
-                                                                       q = currentSearch
-                                                                        }))
-            Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-        </div>
-        *@
 
 
 }
@@ -112,6 +148,14 @@ else
     <style>
         body {
             background-color: blanchedalmond;
+        }
+
+        #div0, #div1, #div2, #div3 {
+            display: inline-block;
+        }
+
+        #divsub {
+            padding: 5px 0px 20px 10px;
         }
     </style>
 }

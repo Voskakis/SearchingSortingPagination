@@ -9,5 +9,9 @@ namespace SearchingSortingPagination.Models
 
         //navigation properties
         public virtual ICollection<Trainer> Trainers { get; set; }
+        public Category()
+        {
+
+        }
     }
 }

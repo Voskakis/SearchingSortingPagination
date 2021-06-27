@@ -14,5 +14,9 @@ namespace SearchingSortingPagination.Models
 
         //navigation properties
         public virtual ICollection<Category> Categories { get; set; }
+        public Trainer()
+        {
+
+        }
     }
 }

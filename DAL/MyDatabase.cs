@@ -1,9 +1,5 @@
 ﻿using SearchingSortingPagination.Models;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace SearchingSortingPagination.Dal
 {
@@ -13,7 +9,21 @@ namespace SearchingSortingPagination.Dal
         public DbSet<Category> Categories { get; set; }
         public MyDatabase(): base("ONOMA")
         {
-
+            this.Configuration.LazyLoadingEnabled = true;
+            this.Configuration.ProxyCreationEnabled = true;
         }
+        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<Trainer>()
+        //        .HasMany(t => t.Categories)
+        //        .WithMany(t => t.Trainers)
+        //        .Map(m =>
+        //        {
+        //            m.ToTable("TrainersCategories");
+        //            m.MapLeftKey("StudentId");
+        //            m.MapRightKey("CategoryId");
+        //        });
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }

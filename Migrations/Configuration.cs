@@ -18,22 +18,21 @@
 
         protected override void Seed(MyDatabase context)
         {
+            List<Category> categories = new List<Category>(TrainerGenerator.Fields.Length);
 
             foreach (var field in TrainerGenerator.Fields)
             {
-                Category category = new Category() { Kind = field };
-                if (context.Categories.FirstOrDefault(c => c.Kind == category.Kind)==null)
-                {
-                    context.Entry(category).State = EntityState.Added;
-                }
+                categories.Add(new Category() { Kind = field });
+                    //context.Entry(category).State = EntityState.Added;
             }
-            context.SaveChanges();
 
-            Category[] categories = context.Categories.ToArray();
+            List<Trainer> trainers = new List<Trainer>(101);
             TrainerGenerator tg = new TrainerGenerator();
             List<Tuple<string, string>> names = TrainerGenerator.GetFullNames();
+            int troll_meter = 0;
             foreach (var fullname in names)
             {
+                if (troll_meter++ > 80) break;
                 bool isEmployed = tg.GetChance(0.9);
                 
                 Trainer trainer = new Trainer()
@@ -44,19 +43,26 @@
                     Salary = isEmployed ? tg.GetMoney() : 0,
                     isAvailable = isEmployed ? tg.GetChance(0.5) : true
                 };
-                if (context.Trainers.FirstOrDefault(t => t.FirstName + t.LastName == trainer.FirstName + trainer.LastName)==null)
+                trainer.Categories = new List<Category>();
+                foreach (var category in categories)
                 {
-                    for (int i = 0; i < tg.Rand.Next(1, 4); i++)
-                    {
-                        Category tbi = categories[tg.Rand.Next(categories.Length)];
-                        if (!trainer.Categories.Contains(tbi))
-                        {
-                            trainer.Categories.Add(tbi);
-                        }
+                    if (tg.GetChance(0.1)) {
+                        trainer.Categories.Add(category);
                     }
-                    context.Entry(trainer).State = EntityState.Added;
                 }
+                trainers.Add(trainer);
             }
+
+            foreach (var category in categories)
+            {
+                context.Categories.AddOrUpdate(x => x.Kind, category);
+            }
+
+            foreach (var trainer in trainers)
+            {
+                context.Trainers.AddOrUpdate(x => new { x.FirstName, x.LastName }, trainer);
+            }
+
             context.SaveChanges();
         }
     }

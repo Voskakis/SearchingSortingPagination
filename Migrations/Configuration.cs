@@ -28,11 +28,10 @@
 
             List<Trainer> trainers = new List<Trainer>(101);
             TrainerGenerator tg = new TrainerGenerator();
-            List<Tuple<string, string>> names = TrainerGenerator.GetFullNames();
-            int troll_meter = 0;
+            List<Tuple<string, string>> names = tg.GetFullNames(200);
+            
             foreach (var fullname in names)
             {
-                if (troll_meter++ > 200) break;
                 bool isEmployed = tg.GetChance(0.9);
                 
                 Trainer trainer = new Trainer()
@@ -52,7 +51,7 @@
                 }
                 trainers.Add(trainer);
             }
-
+            //names.Clear();
             foreach (var category in categories)
             {
                 context.Categories.AddOrUpdate(x => x.Kind, category);

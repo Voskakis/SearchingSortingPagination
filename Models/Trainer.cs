@@ -10,11 +10,12 @@ namespace SearchingSortingPagination.Models
         public int TrainerId { get; set; }
 
         [Required(), MaxLength(60), MinLength(1)]
-        [RegularExpression(@"^[a-zA-Z''-'\s]{1,60}$", ErrorMessage = "Characters are not allowed.")]
+        [RegularExpression(@"^[^0-9]+$", ErrorMessage = "Characters are not allowed.")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required(), MaxLength(60), MinLength(1)]
+        [RegularExpression(@"^[^0-9]+$", ErrorMessage = "Characters are not allowed.")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
